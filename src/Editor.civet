@@ -19,10 +19,10 @@ export const Editor = () =>
             const output = civet.compile(editorCode)
             monacoEditor.editor.colorize(output, "typescript", {}).then(setCompiledCodeHTML)
 
-        m.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+        m.languages.typescript.typescriptDefaults.setDiagnosticsOptions {
             noSemanticValidation: true,
             noSyntaxValidation: true,
-        });
+        }
 
         e.onDidBlurEditorText () =>  
             const newURL = createURLQueryWithCompilerOptions(e.getValue(), e)
