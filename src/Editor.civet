@@ -15,8 +15,9 @@ export const Editor = () =>
     const [compiledCodeHTML, setCompiledCodeHTML] = useState ""
 
     const onMount = useCallback<OnMount>((e, m) => {
-        const output = civet.compile(editorCode)
-        monacoEditor.editor.colorize(output, "typescript", {}).then(setCompiledCodeHTML)
+        if (editorCode)
+            const output = civet.compile(editorCode)
+            monacoEditor.editor.colorize(output, "typescript", {}).then(setCompiledCodeHTML)
 
         m.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
             noSemanticValidation: true,
@@ -30,8 +31,8 @@ export const Editor = () =>
     }, [])
 
     const onChange = useCallback<OnChange>((str) => {
-        setEditorCode(str)
         if (str)
+            setEditorCode(str)
             const output = civet.compile(str)
             monacoEditor.editor.colorize(output, "javascript", {}).then(setCompiledCodeHTML)
     }, [])
@@ -39,6 +40,6 @@ export const Editor = () =>
     return 
         <div style={{ display:"flex", flexDirection: "row" }}>
             <div style={{ flex: 1 }}>
-                <MonacoEditor height="50vh" defaultLanguage="typescript" {onMount} {onChange} value=editorCode />
+                <MonacoEditor height="50vh" defaultLanguage="typescript" {onMount} {onChange} value={editorCode || undefined} />
                 
             <div style={{ width: 320, fontFamily: "monospace" }} dangerouslySetInnerHTML={{ __html: compiledCodeHTML }}>
