@@ -1,0 +1,44 @@
+civet from "@danielx/civet"
+{useCallback, useState, useRef} from "react"
+{getInitialCode} from "./lib/getInitialCode.civet"
+{createURLQueryWithCompilerOptions} from "./lib/setURL.civet"
+
+lzstring from "lz-string"
+MonacoEditor from '@monaco-editor/react';
+import * as monacoEditor from "monaco-editor/esm/vs/editor/editor.api";
+
+import type {OnChange, OnMount} from "@monaco-editor/react"
+const welcomeMessage = `Welcome to Civet playground!`
+
+export const Editor = () => 
+    const [editorCode, setEditorCode] = useState(getInitialCode(welcomeMessage, document.location))
+    const [compiledCodeHTML, setCompiledCodeHTML] = useState ""
+
+    const onMount = useCallback<OnMount>((e, m) => {
+        const output = civet.compile(editorCode)
+        monacoEditor.editor.colorize(output, "typescript", {}).then(setCompiledCodeHTML)
+
+        m.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
+            noSemanticValidation: true,
+            noSyntaxValidation: true,
+        });
+
+        e.onDidBlurEditorText () =>  
+            const newURL = createURLQueryWithCompilerOptions(e.getValue(), e)
+            window.history.replaceState({}, "", newURL)
+
+    }, [])
+
+    const onChange = useCallback<OnChange>((str) => {
+        setEditorCode(str)
+        if (str)
+            const output = civet.compile(str)
+            monacoEditor.editor.colorize(output, "javascript", {}).then(setCompiledCodeHTML)
+    }, [])
+
+    return 
+        <div style={{ display:"flex", flexDirection: "row" }}>
+            <div style={{ flex: 1 }}>
+                <MonacoEditor height="50vh" defaultLanguage="typescript" {onMount} {onChange} value=editorCode />
+                
+            <div style={{ width: 320, fontFamily: "monospace" }} dangerouslySetInnerHTML={{ __html: compiledCodeHTML }}>
